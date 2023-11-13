@@ -1,5 +1,6 @@
 {
   "name": "location-demo",
+  "description": "A demo for location geojson features",
   "version": "0.1.0",
   "private": true,
   "scripts": {
