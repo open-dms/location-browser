@@ -10,7 +10,7 @@ import {
 export interface LocationState {
   locations: Feature[];
   total: number;
-  selected: Feature | null;
+  selected?: Feature;
 }
 type LocationAction =
   | { type: "add"; payload: Feature[] }
@@ -41,7 +41,7 @@ const defaultContext: {
   state: {
     locations: [],
     total: 0,
-    selected: null,
+    selected: undefined,
   },
   dispatch: () => undefined,
 };
