@@ -10,7 +10,7 @@ export const LocationBrowser = ({
   initialState: LocationState;
 }) => {
   return (
-    <div className="h-screen grid grid-cols-[250px_1fr]">
+    <div className="h-full grid grid-cols-[minmax(250px,max-content)_1fr]">
       <LocationContextProvider initialState={initialState}>
         <LocationList />
         <LocationMap />
