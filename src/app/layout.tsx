@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col h-screen`}>
-        <header className="bg-emerald-500 text-emerald-50 flex flex-row justify-between items-baseline p-4">
+        <header className="bg-emerald-500 dark:bg-emerald-900 text-emerald-50 flex flex-row justify-between items-baseline p-4">
           <div className="text-3xl">Open DMS location browser</div>
           <div>Version v{version}</div>
         </header>

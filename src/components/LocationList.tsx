@@ -28,16 +28,16 @@ export const LocationList = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-200">
+    <div className="flex flex-col h-full bg-slate-200 dark:bg-slate-800">
       <ul className="flex-1 basis-0 overflow-y-auto">
         {Array.from(locations.values()).map((item) => (
           <li key={item.id}>
             <button
               onClick={() => showMap(item)}
               className={classNames(
-                "hover:bg-white px-4 py-2 w-full text-left",
+                "hover:bg-white dark:hover:bg-emerald-500 px-4 py-2 w-full text-left",
                 "select-none",
-                { "bg-white": selected?.id === item.id }
+                { "bg-white dark:bg-emerald-500": selected?.id === item.id }
               )}
             >
               {item.properties.name}
@@ -46,7 +46,7 @@ export const LocationList = () => {
         ))}
       </ul>
       {total > locations.length && (
-        <div className="flex flex-col gap-2 px-4 py-2 text-center bg-slate-50">
+        <div className="flex flex-col gap-2 px-4 py-2 text-center bg-slate-50 dark:bg-slate-900">
           <MoreButton onClick={loadMore} loading={loading} />
           <small className="italic">Total locations: {total}</small>
         </div>
