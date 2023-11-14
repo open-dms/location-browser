@@ -1,7 +1,7 @@
 "use client";
 
 import { LocationContext } from "@/context/location";
-import { Feature } from "@/lib/location";
+import { Feature } from "@/lib/osm";
 import { useContext } from "react";
 
 export const LocationList = () => {

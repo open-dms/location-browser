@@ -1,3 +1,4 @@
+import { Collection } from "mongodb";
 import { connect } from "./mongodb";
 import { cache } from "react";
 
@@ -10,10 +11,16 @@ export interface Feature {
   };
 }
 
+async function getCollection(): Promise<Collection<Feature>> {
+  const client = await connect();
+  return client.db("odms").collection<Feature>("osm");
+}
+
 export const getList = cache(
   async (skip = 0, limit = 20): Promise<Feature[]> => {
-    const coll = (await connect()).db("odms").collection<Feature>("locality");
-    const data = await coll
+    const data = await (
+      await getCollection()
+    )
       .find(
         {},
         {
@@ -27,6 +34,5 @@ export const getList = cache(
 );
 
 export const getTotal = cache(async (query = {}): Promise<number> => {
-  const coll = (await connect()).db("odms").collection<Feature>("locality");
-  return coll.countDocuments(query);
+  return (await getCollection()).countDocuments(query);
 });

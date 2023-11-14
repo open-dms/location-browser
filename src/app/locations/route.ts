@@ -1,4 +1,4 @@
-import { getList } from "@/lib/location";
+import { getList } from "@/lib/osm";
 
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;

@@ -1,4 +1,4 @@
-import { Feature } from "@/lib/location";
+import { Feature } from "@/lib/osm";
 import {
   Dispatch,
   PropsWithChildren,

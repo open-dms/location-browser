@@ -1,4 +1,4 @@
-import { getTotal } from "@/lib/location";
+import { getTotal } from "@/lib/osm";
 
 export async function GET(request: Request) {
   const data = await getTotal();
