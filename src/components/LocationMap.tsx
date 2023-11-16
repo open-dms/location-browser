@@ -69,21 +69,32 @@ export const LocationMap = () => {
   }, [mapRef, bounds]);
 
   return (
-    <Map
-      ref={mapRef}
-      reuseMaps
-      initialViewState={{
-        bounds,
-      }}
-      style={{ width: "100%", height: "100%" }}
-      mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
-    >
-      {geojson && (
-        <Source id="boundary" type="geojson" data={geojson}>
-          <Layer {...layerStyle.stroke} />
-          <Layer {...layerStyle.fill} />
-        </Source>
-      )}
-    </Map>
+    <div className="relative">
+      <Map
+        ref={mapRef}
+        reuseMaps
+        initialViewState={{
+          bounds,
+        }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
+      >
+        {geojson && (
+          <Source id="boundary" type="geojson" data={geojson}>
+            <Layer {...layerStyle.stroke} />
+            <Layer {...layerStyle.fill} />
+          </Source>
+        )}
+      </Map>
+      <a
+        href="https://www.maptiler.com"
+        className="absolute left-2 bottom-2 z-10"
+      >
+        <img
+          src="https://api.maptiler.com/resources/logo.svg"
+          alt="MapTiler logo"
+        />
+      </a>
+    </div>
   );
 };
