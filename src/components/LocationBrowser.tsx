@@ -1,7 +1,7 @@
 "use client";
 
-import { LocationContextProvider } from "@/context/location";
-import { LocationState } from "@/reducer/location";
+import { LocationContextProvider } from "@/lib/location/context";
+import { LocationState } from "@/lib/location/reducer";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
 import { LocationList } from "./LocationList";

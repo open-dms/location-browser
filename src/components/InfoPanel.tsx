@@ -1,4 +1,4 @@
-import { LocationContext } from "@/context/location";
+import { LocationContext } from "@/lib/location/context";
 import classNames from "classnames";
 import { useContext, useState } from "react";
 import { Copy } from "./Copy";

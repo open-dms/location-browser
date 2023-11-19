@@ -1,6 +1,6 @@
 "use client";
 
-import { LocationContext } from "@/context/location";
+import { LocationContext } from "@/lib/location/context";
 import { Feature } from "@/lib/osm";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocationContext } from "@/context/location";
+import { LocationContext } from "@/lib/location/context";
 import { toBounds } from "@/lib/geojson";
 import {
   FillLayerSpecification,
