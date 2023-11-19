@@ -12,10 +12,10 @@ export const InfoPanel = () => {
     <div
       className={classNames(
         "grid grid-cols-[min-content_auto]",
-        "bg-slate-200 dark:bg-slate-800 text-slate-400 font-light text-sm"
+        "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-light text-sm"
       )}
     >
-      <div className="border-r-[1px] border-slate-950 p-2">
+      <div className="border-r-[1px] border-slate-300 dark:border-slate-950 p-2">
         <button onClick={() => setOpen((open) => !open)}>
           <svg
             viewBox="0 0 100 100"
@@ -36,7 +36,7 @@ export const InfoPanel = () => {
       </div>
       <div
         className={classNames("p-2 transition-all", {
-          "h-6 overflow-hidden text-slate-600": !open,
+          "h-6 overflow-hidden text-slate-400 dark:text-slate-600": !open,
           "h-fit max-h-96 overflow-y-auto": open,
         })}
       >
