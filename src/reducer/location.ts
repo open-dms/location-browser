@@ -2,7 +2,7 @@ import { Feature } from "@/lib/osm";
 import { LngLat, LngLatBounds } from "maplibre-gl";
 import { Reducer } from "react";
 
-interface MapInfoPayload {
+export interface MapState {
   bounds: LngLatBounds;
   zoom: number;
   center: LngLat;
@@ -13,7 +13,7 @@ export interface LocationState {
   locations: Feature[];
   total: number;
   selected?: Feature;
-  info?: MapInfoPayload;
+  info?: MapState;
 }
 
 export type LocationAction =
@@ -21,7 +21,7 @@ export type LocationAction =
   | { type: "select"; payload: Feature }
   | {
       type: "info";
-      payload: MapInfoPayload;
+      payload: MapState;
     };
 
 export const reducer: Reducer<LocationState, LocationAction> = (
