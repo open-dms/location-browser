@@ -1,38 +1,5 @@
-import { Feature } from "@/lib/osm";
-import {
-  Dispatch,
-  PropsWithChildren,
-  Reducer,
-  createContext,
-  useReducer,
-} from "react";
-
-export interface LocationState {
-  locations: Feature[];
-  total: number;
-  selected?: Feature;
-}
-type LocationAction =
-  | { type: "add"; payload: Feature[] }
-  | { type: "select"; payload: Feature };
-
-const reducer: Reducer<LocationState, LocationAction> = (state, action) => {
-  switch (action.type) {
-    case "add":
-      state = {
-        ...state,
-        locations: state.locations.concat(action.payload),
-      };
-      break;
-    case "select":
-      state = {
-        ...state,
-        selected: action.payload,
-      };
-      break;
-  }
-  return state;
-};
+import { LocationAction, LocationState, reducer } from "@/reducer/location";
+import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";
 
 const defaultContext: {
   state: LocationState;
@@ -53,6 +20,7 @@ export const LocationContextProvider = ({
   initialState,
 }: PropsWithChildren & { initialState: LocationState }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
     <LocationContext.Provider value={{ state, dispatch }}>
       {children}

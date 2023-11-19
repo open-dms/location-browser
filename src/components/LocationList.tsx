@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import { MoreButton } from "./MoreButton";
 
-export const LocationList = () => {
+export const LocationList = ({ className }: { className: string }) => {
   const {
     state: { locations, total, selected },
     dispatch,
@@ -28,7 +28,12 @@ export const LocationList = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-200 dark:bg-slate-800">
+    <div
+      className={classNames(
+        "flex flex-col h-full bg-slate-200 dark:bg-slate-800 shadow-slate-950 shadow-lg",
+        className
+      )}
+    >
       <ul className="flex-1 basis-0 overflow-y-auto">
         {Array.from(locations.values()).map((item) => (
           <li key={item.id}>

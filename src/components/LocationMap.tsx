@@ -1,17 +1,16 @@
 "use client";
 
-import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { LocationContext } from "@/context/location";
+import { toBounds } from "@/lib/geojson";
 import {
-  Feature,
   FillLayerSpecification,
   LineLayerSpecification,
   LngLatBounds,
-  LngLatLike,
+  MapLibreEvent,
 } from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { useContext, useEffect, useMemo, useRef } from "react";
-import { LocationContext } from "@/context/location";
-import { toBounds } from "@/lib/geojson";
+import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
 
 const layerStyle: {
   stroke: LineLayerSpecification;
@@ -43,6 +42,7 @@ const layerStyle: {
 export const LocationMap = () => {
   const {
     state: { selected },
+    dispatch,
   } = useContext(LocationContext);
 
   const geojson = selected && {
@@ -68,6 +68,13 @@ export const LocationMap = () => {
     mapRef.current?.fitBounds(bounds, { padding: 100, speed: 3 });
   }, [mapRef, bounds]);
 
+  function sendMapInfo(e: MapLibreEvent) {
+    const zoom = e.target.getZoom();
+    const bounds = e.target.getBounds();
+    const center = e.target.getCenter();
+    dispatch({ type: "info", payload: { zoom, bounds, center } });
+  }
+
   return (
     <div className="relative">
       <Map
@@ -78,6 +85,10 @@ export const LocationMap = () => {
         }}
         style={{ width: "100%", height: "100%" }}
         mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
+        onLoad={sendMapInfo}
+        onDragEnd={sendMapInfo}
+        onMoveEnd={sendMapInfo}
+        onZoomEnd={sendMapInfo}
       >
         {geojson && (
           <Source id="boundary" type="geojson" data={geojson}>
