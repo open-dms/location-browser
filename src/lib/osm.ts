@@ -1,6 +1,8 @@
+import { MapState } from "@/lib/location/reducer";
 import { Collection } from "mongodb";
-import { connect } from "./mongodb";
 import { cache } from "react";
+import { connect } from "./mongodb";
+import { LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
 
 export interface Feature {
   id: string;
@@ -17,15 +19,30 @@ async function getCollection(): Promise<Collection<Feature>> {
 }
 
 export const getList = cache(
-  async (skip = 0, limit = 20): Promise<Feature[]> => {
+  async (
+    bounds: LngLatBoundsLike,
+    skip = 0,
+    limit = 20
+  ): Promise<Feature[]> => {
     const data = await (
       await getCollection()
     )
       .find(
-        {},
+        {
+          geometry: {
+            $geoIntersects: {
+              $geometry: {
+                type: "LineString",
+                coordinates: LngLatBounds.convert(bounds).toArray(),
+              },
+            },
+          },
+        },
         {
           limit,
           skip,
+          projection: { "properties.name": 1, "properties.adminLevel": 1 },
+          sort: { "properties.adminLevel": 1 },
         }
       )
       .toArray();

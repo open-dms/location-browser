@@ -5,27 +5,33 @@ import { Feature } from "@/lib/osm";
 import classNames from "classnames";
 import { useContext, useEffect, useState } from "react";
 import { MoreButton } from "./MoreButton";
+import { dispatchFetchQuery } from "@/lib/location/action";
+import { LoadingState } from "@/lib/location/reducer";
 
 export const LocationList = ({ className }: { className: string }) => {
   const {
-    state: { locations, total, selected },
+    state: { locations, total, selected, info, loadingState },
     dispatch,
   } = useContext(LocationContext);
-  const [loading, setLoading] = useState(false);
 
   const showMap = (item: Feature) => {
     dispatch({ type: "select", payload: item });
   };
 
   const loadMore = async () => {
-    setLoading(true);
+    if (!info) {
+      return;
+    }
     const skip = locations.length;
-    const { data } = await fetch(`locations?skip=${skip}`).then<{
-      data: Feature[];
-    }>((response) => response.json());
-    dispatch({ type: "add", payload: data });
-    setLoading(false);
+    dispatchFetchQuery(dispatch, info, skip);
   };
+
+  useEffect(() => {
+    if (!info) {
+      return;
+    }
+    dispatchFetchQuery(dispatch, info);
+  }, [dispatch, info]);
 
   return (
     <div
@@ -52,7 +58,10 @@ export const LocationList = ({ className }: { className: string }) => {
       </ul>
       {total > locations.length && (
         <div className="flex flex-col gap-2 px-4 py-2 text-center bg-slate-50 dark:bg-slate-900">
-          <MoreButton onClick={loadMore} loading={loading} />
+          <MoreButton
+            onClick={loadMore}
+            loading={loadingState === LoadingState.Loading}
+          />
           <small className="italic">Total locations: {total}</small>
         </div>
       )}
