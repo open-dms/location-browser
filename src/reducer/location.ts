@@ -6,6 +6,7 @@ interface MapInfoPayload {
   bounds: LngLatBounds;
   zoom: number;
   center: LngLat;
+  radius: number;
 }
 
 export interface LocationState {

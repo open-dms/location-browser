@@ -1,6 +1,7 @@
 import { LocationContext } from "@/context/location";
 import classNames from "classnames";
 import { useContext, useState } from "react";
+import { Copy } from "./Copy";
 
 export const InfoPanel = () => {
   const [open, setOpen] = useState(false);
@@ -34,21 +35,33 @@ export const InfoPanel = () => {
         </button>
       </div>
       <div
-        className={classNames(
-          "p-2 h-6 overflow-hidden text-slate-600 transition-all",
-          {
-            "h-fit max-h-96 overflow-y-auto text-inherit": open,
-          }
-        )}
+        className={classNames("p-2 transition-all", {
+          "h-6 overflow-hidden text-slate-600": !open,
+          "h-fit max-h-96 overflow-y-auto": open,
+        })}
       >
         {info && (
-          <dl className="grid grid-cols-[max-content_auto] gap-x-2">
+          <dl className="grid grid-cols-[max-content_auto] gap-x-2 items-center">
             <dt>Bounds</dt>
-            <dd>{info?.bounds.toString()}</dd>
+            <dd>
+              {info?.bounds.toArray().flat().join(", ")}
+              <Copy />
+            </dd>
             <dt>Center</dt>
-            <dd>{info.center.toString()}</dd>
+            <dd>
+              {info.center.toArray().join(", ")}
+              <Copy />
+            </dd>
+            <dt>Aprox. radius (m)</dt>
+            <dd>
+              {info.radius}
+              <Copy />
+            </dd>
             <dt>Zoom</dt>
-            <dd>{info.zoom}</dd>
+            <dd>
+              {info.zoom}
+              <Copy />
+            </dd>
           </dl>
         )}
       </div>

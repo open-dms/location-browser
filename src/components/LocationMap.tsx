@@ -72,7 +72,8 @@ export const LocationMap = () => {
     const zoom = e.target.getZoom();
     const bounds = e.target.getBounds();
     const center = e.target.getCenter();
-    dispatch({ type: "info", payload: { zoom, bounds, center } });
+    const radius = center.distanceTo(bounds._ne);
+    dispatch({ type: "info", payload: { zoom, bounds, center, radius } });
   }
 
   return (
