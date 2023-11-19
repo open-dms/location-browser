@@ -100,6 +100,7 @@ export const LocationMap = () => {
       <a
         href="https://www.maptiler.com"
         className="absolute left-2 bottom-2 z-10"
+        target="_blank"
       >
         <img
           src="https://api.maptiler.com/resources/logo.svg"
