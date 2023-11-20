@@ -9,6 +9,7 @@ import {
   LngLatBounds,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import Image from "next/image";
 import { useContext, useEffect, useMemo, useRef } from "react";
 import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
 
@@ -92,9 +93,11 @@ export const LocationMap = () => {
         className="absolute left-2 bottom-2 z-10"
         target="_blank"
       >
-        <img
+        <Image
           src="https://api.maptiler.com/resources/logo.svg"
           alt="MapTiler logo"
+          width="67"
+          height="20"
         />
       </a>
     </div>
