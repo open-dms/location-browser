@@ -1,5 +1,6 @@
-import { LocationAction, LocationState, reducer } from "@/lib/location/reducer";
+import { LocationState, reducer } from "@/lib/location/reducer";
 import { Dispatch, PropsWithChildren, createContext, useReducer } from "react";
+import { LocationAction } from "./action";
 
 const defaultContext: {
   state: LocationState;
