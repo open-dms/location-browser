@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import packageJson from "../../package.json";
 import "./globals.css";
-import { version } from "../../package.json";
 import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={`${inter.className} flex flex-col h-screen`}>
         <header className="bg-emerald-500 dark:bg-emerald-900 text-emerald-50 flex flex-row justify-between items-baseline p-4">
           <div className="text-3xl">Open DMS location browser</div>
-          <div>Version v{version}</div>
+          <div>Version v{packageJson.version}</div>
         </header>
         <main className="flex-1">{children}</main>
       </body>
