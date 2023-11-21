@@ -1,12 +1,15 @@
 "use client";
 
+import {
+  dispatchFetchGeometry,
+  dispatchFetchListQuery,
+} from "@/lib/location/action";
 import { LocationContext } from "@/lib/location/context";
+import { LoadingState } from "@/lib/location/reducer";
 import { Feature } from "@/lib/osm";
 import classNames from "classnames";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { MoreButton } from "./MoreButton";
-import { dispatchFetchQuery } from "@/lib/location/action";
-import { LoadingState } from "@/lib/location/reducer";
 
 export const LocationList = ({ className }: { className: string }) => {
   const {
@@ -15,7 +18,7 @@ export const LocationList = ({ className }: { className: string }) => {
   } = useContext(LocationContext);
 
   const showMap = (item: Feature) => {
-    dispatch({ type: "select", payload: item });
+    dispatchFetchGeometry(dispatch, item.id);
   };
 
   const loadMore = async () => {
@@ -23,14 +26,14 @@ export const LocationList = ({ className }: { className: string }) => {
       return;
     }
     const skip = locations.length;
-    dispatchFetchQuery(dispatch, info, skip);
+    dispatchFetchListQuery(dispatch, info, skip);
   };
 
   useEffect(() => {
     if (!info) {
       return;
     }
-    dispatchFetchQuery(dispatch, info);
+    dispatchFetchListQuery(dispatch, info);
   }, [dispatch, info]);
 
   return (

@@ -43,7 +43,13 @@ export const reducer: Reducer<LocationState, LocationAction> = (
     case "select":
       state = {
         ...state,
-        selected: action.payload,
+        selected: state.locations.find(
+          ({ id }) =>
+            id ===
+            (typeof action.payload === "string"
+              ? action.payload
+              : action.payload.id)
+        ),
       };
       break;
     case "info":
@@ -63,6 +69,15 @@ export const reducer: Reducer<LocationState, LocationAction> = (
         ...state,
         loadingState: LoadingState.Success,
         locations: action.payload,
+      };
+      break;
+    case "fetchGeometrySuccess":
+      state = {
+        ...state,
+        loadingState: LoadingState.Success,
+        locations: state.locations.map((item) =>
+          item.id === action.payload.id ? { ...item, ...action.payload } : item
+        ),
       };
       break;
     case "fetchError":
