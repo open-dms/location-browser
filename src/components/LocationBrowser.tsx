@@ -20,7 +20,7 @@ export const LocationBrowser = ({
     }
   }, []);
   return (
-    <div className="h-full grid grid-cols-[minmax(250px,max-content)_1fr] grid-rows-[1fr_auto]">
+    <div className="h-full grid grid-cols-[350px_1fr] grid-rows-[1fr_auto]">
       <LocationContextProvider initialState={initialState}>
         <LocationList className="row-span-2" />
         <LocationMap />
