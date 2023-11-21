@@ -39,7 +39,7 @@ export const LocationList = ({ className }: { className: string }) => {
   return (
     <div
       className={classNames(
-        "flex flex-col h-full bg-slate-200 dark:bg-slate-800 shadow-slate-950 shadow-lg",
+        "flex flex-col h-full bg-slate-200 dark:bg-slate-800 shadow-xl z-10",
         className
       )}
     >
