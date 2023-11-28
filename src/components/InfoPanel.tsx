@@ -41,7 +41,7 @@ export const InfoPanel = () => {
         })}
       >
         {info && (
-          <dl className="grid grid-cols-[max-content_auto] gap-x-2 items-center">
+          <dl className="grid grid-cols-[max-content_auto] gap-x-2 items-start">
             <dt>Bounds</dt>
             <dd>
               {info?.bounds.toArray().flat().join(", ")}
