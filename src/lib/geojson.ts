@@ -40,7 +40,7 @@ function isPoint(geometry: Geometry): geometry is Point {
 }
 
 // Function to calculate bounds from a flattened array of coordinates
-export function toBounds(feature: Feature) {
+export function toBounds(feature: Feature | Pick<Feature, "geometry">) {
   let coordinates: LngLatLike[] = [];
   const { geometry } = feature;
 

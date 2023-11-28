@@ -1,13 +1,13 @@
-import { LocationContext } from "@/lib/location/context";
+import { infoState } from "@/lib/location/atoms";
 import classNames from "classnames";
-import { useContext, useState } from "react";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
 import { Copy } from "./Copy";
 
 export const InfoPanel = () => {
   const [open, setOpen] = useState(false);
-  const {
-    state: { info },
-  } = useContext(LocationContext);
+  const info = useRecoilValue(infoState);
+
   return (
     <div
       className={classNames(

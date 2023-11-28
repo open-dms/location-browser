@@ -1,4 +1,4 @@
-import { LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
+import { LngLat, LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
 import { Collection, ObjectId, WithId } from "mongodb";
 import { cache } from "react";
 import { connect } from "./mongodb";
@@ -10,6 +10,13 @@ export interface Feature {
   properties: {
     name: string;
   };
+}
+
+export interface MapInfo {
+  bounds: LngLatBounds;
+  center: LngLat;
+  radius: number;
+  zoom: number;
 }
 
 async function getCollection(): Promise<Collection<Feature>> {

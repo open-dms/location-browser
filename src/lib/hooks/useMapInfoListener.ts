@@ -1,11 +1,13 @@
+import { infoState } from "@/lib/location/atoms";
+import { MapInfo } from "@/lib/osm";
 import { MapLibreEvent } from "maplibre-gl";
-import { Dispatch, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import { useDebounce } from "usehooks-ts";
-import { LocationAction } from "../location/action";
-import { MapState } from "../location/reducer";
 
-export function useMapInfoListener(dispatch: Dispatch<LocationAction>) {
-  const [mapState, setMapState] = useState<MapState>();
+export function useMapInfoListener() {
+  const [_, setInfo] = useRecoilState(infoState);
+  const [mapState, setMapState] = useState<MapInfo>();
   const debouncedState = useDebounce(mapState);
 
   const callback = useCallback((e: MapLibreEvent) => {
@@ -17,8 +19,8 @@ export function useMapInfoListener(dispatch: Dispatch<LocationAction>) {
   }, []);
 
   useEffect(() => {
-    debouncedState && dispatch({ type: "info", payload: debouncedState });
-  }, [dispatch, debouncedState]);
+    debouncedState && setInfo(debouncedState);
+  }, [debouncedState, setInfo]);
 
   return {
     onLoad: callback,

@@ -2,15 +2,15 @@
 
 import { toBounds } from "@/lib/geojson";
 import { useMapInfoListener } from "@/lib/hooks/useMapInfoListener";
-import { LocationContext } from "@/lib/location/context";
 import {
   FillLayerSpecification,
   LineLayerSpecification,
   LngLatBounds,
 } from "maplibre-gl";
+import { selectedGeoState } from "@/lib/location/selectors";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Image from "next/image";
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
 
 const layerStyle: {
@@ -39,12 +39,10 @@ const layerStyle: {
     },
   },
 };
+import { useRecoilValueLoadable } from "recoil";
 
 export const LocationMap = () => {
-  const {
-    state: { selected, info },
-    dispatch,
-  } = useContext(LocationContext);
+  const selected = useRecoilValueLoadable(selectedGeoState).valueMaybe();
 
   const geojson = selected && {
     type: "FeatureCollection",
@@ -79,7 +77,7 @@ export const LocationMap = () => {
         }}
         style={{ width: "100%", height: "100%" }}
         mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
-        {...useMapInfoListener(dispatch)}
+        {...useMapInfoListener()}
       >
         {geojson && (
           <Source id="boundary" type="geojson" data={geojson}>

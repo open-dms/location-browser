@@ -1,40 +1,33 @@
 "use client";
 
 import {
-  dispatchFetchGeometry,
-  dispatchFetchListQuery,
-} from "@/lib/location/action";
-import { LocationContext } from "@/lib/location/context";
-import { LoadingState } from "@/lib/location/reducer";
-import { Feature } from "@/lib/osm";
+  infoState,
+  locationState,
+  selectedState,
+  totalState,
+} from "@/lib/location/atoms";
+import { locationListState } from "@/lib/location/selectors";
 import classNames from "classnames";
-import { useContext, useEffect } from "react";
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { MoreButton } from "./MoreButton";
 
 export const LocationList = ({ className }: { className: string }) => {
-  const {
-    state: { locations, total, selected, info, loadingState },
-    dispatch,
-  } = useContext(LocationContext);
+  const info = useRecoilValue(infoState);
+  const [selected, setSelected] = useRecoilState(selectedState);
+  const total = useRecoilValue(totalState);
 
-  const showMap = (item: Feature) => {
-    dispatchFetchGeometry(dispatch, item.id);
-  };
+  const locationsLoadable = useRecoilValueLoadable(locationListState);
+  const locations = locationsLoadable.valueMaybe() || [];
 
   const loadMore = async () => {
     if (!info) {
       return;
     }
     const skip = locations.length;
-    dispatchFetchListQuery(dispatch, info, skip);
-  };
 
-  useEffect(() => {
-    if (!info) {
-      return;
-    }
-    dispatchFetchListQuery(dispatch, info);
-  }, [dispatch, info]);
+    // TODO implement using recoil
+    // dispatchFetchListQuery(dispatch, info, skip);
+  };
 
   return (
     <div
@@ -47,7 +40,7 @@ export const LocationList = ({ className }: { className: string }) => {
         {Array.from(locations.values()).map((item) => (
           <li key={item.id}>
             <button
-              onClick={() => showMap(item)}
+              onClick={() => setSelected(item)}
               className={classNames(
                 "hover:bg-white dark:hover:bg-emerald-500 px-4 py-2 w-full text-left",
                 "select-none",
@@ -63,7 +56,7 @@ export const LocationList = ({ className }: { className: string }) => {
         <div className="flex flex-col gap-2 px-4 py-2 text-center bg-slate-50 dark:bg-slate-900">
           <MoreButton
             onClick={loadMore}
-            loading={loadingState === LoadingState.Loading}
+            loading={locationsLoadable.state === "loading"}
           />
           <small className="italic">Total locations: {total}</small>
         </div>
