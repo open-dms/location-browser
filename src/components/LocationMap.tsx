@@ -2,44 +2,14 @@
 
 import { toBounds } from "@/lib/geojson";
 import { useMapInfoListener } from "@/lib/hooks/useMapInfoListener";
-import {
-  FillLayerSpecification,
-  LineLayerSpecification,
-  LngLatBounds,
-} from "maplibre-gl";
 import { selectedGeoState } from "@/lib/location/selectors";
+import { LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
-
-const layerStyle: {
-  stroke: LineLayerSpecification;
-  fill: FillLayerSpecification;
-} = {
-  stroke: {
-    id: "stroke",
-    source: "osm",
-    type: "line",
-    paint: {
-      "line-color": "rgb(42, 77, 208, .8)",
-      "line-width": 3,
-    },
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-  },
-  fill: {
-    id: "fill",
-    source: "osm",
-    type: "fill",
-    paint: {
-      "fill-color": "rgb(42, 77, 208, .4)",
-    },
-  },
-};
 import { useRecoilValueLoadable } from "recoil";
+import { layerStyle } from "./layerStyle";
 
 export const LocationMap = () => {
   const selected = useRecoilValueLoadable(selectedGeoState).valueMaybe();
