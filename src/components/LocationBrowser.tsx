@@ -3,6 +3,7 @@
 import { totalState } from "@/lib/location/atoms";
 import { locationListState } from "@/lib/location/selectors";
 import { Feature } from "@/lib/osm";
+import { useEffect } from "react";
 import { MutableSnapshot, RecoilRoot } from "recoil";
 import { InfoPanel } from "./InfoPanel";
 import { LocationList } from "./LocationList";
