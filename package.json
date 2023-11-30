@@ -10,9 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/geojson": "^7946.0.13",
-    "@types/mapbox-gl": "^2.7.18",
     "classnames": "^2.3.2",
+    "jotai": "^2.6.0",
     "maplibre-gl": "^3.6.0",
     "mongodb": "^6.2.0",
     "next": "14.0.2",
@@ -23,14 +22,17 @@
     "vercel": "^32.5.3"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/geojson": "^7946.0.13",
+    "@types/mapbox-gl": "^2.7.18",
+    "@swc-jotai/react-refresh": "^0.1.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.2"
+    "typescript": "^5"
   }
 }

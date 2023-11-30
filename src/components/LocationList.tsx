@@ -1,40 +1,31 @@
 "use client";
 
 import {
-  dispatchFetchGeometry,
-  dispatchFetchListQuery,
-} from "@/lib/location/action";
-import { LocationContext } from "@/lib/location/context";
-import { LoadingState } from "@/lib/location/reducer";
+  locationFeaturesAtom,
+  locationSelectedAtom,
+} from "@/lib/location/atoms";
 import { Feature } from "@/lib/osm";
 import classNames from "classnames";
-import { useContext, useEffect } from "react";
-import { MoreButton } from "./MoreButton";
+import { useAtomValue } from "jotai";
 
 export const LocationList = ({ className }: { className: string }) => {
-  const {
-    state: { locations, total, selected, info, loadingState },
-    dispatch,
-  } = useContext(LocationContext);
+  // const {
+  //   state: { locations, total, selected, info, loadingState },
+  //   dispatch,
+  // } = useContext(LocationContext);
+  const locations = useAtomValue(locationFeaturesAtom);
+  const selected = useAtomValue(locationSelectedAtom);
 
   const showMap = (item: Feature) => {
-    dispatchFetchGeometry(dispatch, item.id);
+    // dispatchFetchGeometry(dispatch, item.id);
   };
 
-  const loadMore = async () => {
-    if (!info) {
-      return;
-    }
-    const skip = locations.length;
-    dispatchFetchListQuery(dispatch, info, skip);
-  };
-
-  useEffect(() => {
-    if (!info) {
-      return;
-    }
-    dispatchFetchListQuery(dispatch, info);
-  }, [dispatch, info]);
+  // useEffect(() => {
+  //   if (!info) {
+  //     return;
+  //   }
+  //   dispatchFetchListQuery(dispatch, info);
+  // }, [dispatch, info]);
 
   return (
     <div
@@ -59,15 +50,6 @@ export const LocationList = ({ className }: { className: string }) => {
           </li>
         ))}
       </ul>
-      {total > locations.length && (
-        <div className="flex flex-col gap-2 px-4 py-2 text-center bg-slate-50 dark:bg-slate-900">
-          <MoreButton
-            onClick={loadMore}
-            loading={loadingState === LoadingState.Loading}
-          />
-          <small className="italic">Total locations: {total}</small>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,7 +1,8 @@
 "use client";
 
-import { LocationContextProvider } from "@/lib/location/context";
+import { locationFeaturesAtom, locationTotalAtom } from "@/lib/location/atoms";
 import { LocationState } from "@/lib/location/reducer";
+import { Provider, createStore } from "jotai";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
 import { LocationList } from "./LocationList";
@@ -19,13 +20,18 @@ export const LocationBrowser = ({
         .then((registration) => console.log("scope is: ", registration.scope));
     }
   }, []);
+
+  const store = createStore();
+  store.set(locationTotalAtom, initialState.total);
+  store.set(locationFeaturesAtom, initialState.locations);
+
   return (
     <div className="h-full grid grid-cols-[350px_1fr] grid-rows-[1fr_auto]">
-      <LocationContextProvider initialState={initialState}>
+      <Provider store={store}>
         <LocationList className="row-span-2" />
         <LocationMap />
         <InfoPanel />
-      </LocationContextProvider>
+      </Provider>
     </div>
   );
 };
