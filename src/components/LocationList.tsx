@@ -7,6 +7,7 @@ import {
 import { Feature } from "@/lib/osm";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
+import { Search } from "./Search";
 
 export const LocationList = ({ className }: { className: string }) => {
   // const {
@@ -34,6 +35,7 @@ export const LocationList = ({ className }: { className: string }) => {
         className
       )}
     >
+      <Search onSubmit={(item) => alert(JSON.stringify(item))} />
       <ul className="flex-1 basis-0 overflow-y-auto">
         {Array.from(locations.values()).map((item) => (
           <li key={item.id}>
