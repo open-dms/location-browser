@@ -1,7 +1,7 @@
 "use client";
 
 import { locationFeaturesAtom, locationTotalAtom } from "@/lib/location/atoms";
-import { LocationState } from "@/lib/location/reducer";
+import { Feature } from "@/lib/osm";
 import { Provider, createStore } from "jotai";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
@@ -11,7 +11,7 @@ import { LocationMap } from "./LocationMap";
 export const LocationBrowser = ({
   initialState,
 }: {
-  initialState: LocationState;
+  initialState: { total: number; locations: Array<Feature> };
 }) => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {

@@ -1,7 +1,10 @@
 import { LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
-import { Collection, ObjectId, WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { cache } from "react";
-import { connect } from "./mongodb";
+import { getCollection } from "./mongodb";
+
+const databaseName = "odms";
+const collectionName = "osm";
 
 export interface Feature {
   id: string;
@@ -12,9 +15,9 @@ export interface Feature {
   };
 }
 
-async function getCollection(): Promise<Collection<Feature>> {
-  const client = await connect();
-  return client.db("odms").collection<Feature>("osm");
+export interface SearchResultItem {
+  id: Feature["id"];
+  name: Feature["properties"]["name"];
 }
 
 function notNull<T>(value: T | null): value is T {
@@ -42,7 +45,9 @@ export const getList = cache(
     skip = 0,
     limit = 20
   ): Promise<Feature[]> => {
-    const result = (await getCollection()).find(
+    const result = (
+      await getCollection<Feature>(databaseName, collectionName)
+    ).find(
       {
         geometry: {
           $geoIntersects: {
@@ -64,9 +69,43 @@ export const getList = cache(
   }
 );
 
+export const search = cache(
+  async (query: string, limit = 10): Promise<SearchResultItem[]> => {
+    const result = (
+      await getCollection(databaseName, collectionName)
+    ).aggregate<SearchResultItem>([
+      {
+        $match: {
+          $text: {
+            $search: query,
+          },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            id: "$id",
+            name: "$properties.name",
+            score: { $meta: "textScore" },
+          },
+        },
+      },
+      {
+        $sort: {
+          score: -1,
+        },
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+    return await result.toArray();
+  }
+);
+
 export const getGeometry = cache(
   async (id: string): Promise<Feature | null> => {
-    return (await getCollection())
+    return (await getCollection<Feature>(databaseName, collectionName))
       .findOne(
         {
           _id: new ObjectId(id),
@@ -80,5 +119,7 @@ export const getGeometry = cache(
 );
 
 export const getTotal = cache(async (query = {}): Promise<number> => {
-  return (await getCollection()).countDocuments(query);
+  return (await getCollection(databaseName, collectionName)).countDocuments(
+    query
+  );
 });

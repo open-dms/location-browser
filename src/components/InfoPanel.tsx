@@ -1,13 +1,12 @@
-import { LocationContext } from "@/lib/location/context";
 import classNames from "classnames";
-import { useContext, useState } from "react";
+import { useAtom } from "jotai";
+import { useState } from "react";
 import { Copy } from "./Copy";
+import { mapInfoAtom } from "./LocationMap/atoms";
 
 export const InfoPanel = () => {
   const [open, setOpen] = useState(false);
-  const {
-    state: { info },
-  } = useContext(LocationContext);
+  const [info] = useAtom(mapInfoAtom);
   return (
     <div
       className={classNames(
