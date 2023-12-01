@@ -1,7 +1,7 @@
 import { LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
 import { ObjectId, WithId } from "mongodb";
 import { cache } from "react";
-import { getCollection } from "./mongodb";
+import { client } from "./mongodb";
 
 const databaseName = "odms";
 const collectionName = "osm";
@@ -45,67 +45,71 @@ export const getList = cache(
     skip = 0,
     limit = 20
   ): Promise<Feature[]> => {
-    const result = (
-      await getCollection<Feature>(databaseName, collectionName)
-    ).find(
-      {
-        geometry: {
-          $geoIntersects: {
-            $geometry: {
-              type: "LineString",
-              coordinates: LngLatBounds.convert(bounds).toArray(),
+    const result = client
+      .db(databaseName)
+      .collection<Feature>(collectionName)
+      .find(
+        {
+          geometry: {
+            $geoIntersects: {
+              $geometry: {
+                type: "LineString",
+                coordinates: LngLatBounds.convert(bounds).toArray(),
+              },
             },
           },
         },
-      },
-      {
-        limit,
-        skip,
-        projection: { "properties.name": 1, "properties.adminLevel": 1 },
-        sort: { "properties.adminLevel": 1 },
-      }
-    );
+        {
+          limit,
+          skip,
+          projection: { "properties.name": 1, "properties.adminLevel": 1 },
+          sort: { "properties.adminLevel": 1 },
+        }
+      );
     return (await result.toArray()).filter(notNull).map(fromWithId);
   }
 );
 
 export const search = cache(
   async (query: string, limit = 10): Promise<SearchResultItem[]> => {
-    const result = (
-      await getCollection(databaseName, collectionName)
-    ).aggregate<SearchResultItem>([
-      {
-        $match: {
-          $text: {
-            $search: query,
+    const result = client
+      .db(databaseName)
+      .collection(collectionName)
+      .aggregate<SearchResultItem>([
+        {
+          $match: {
+            $text: {
+              $search: query,
+            },
           },
         },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            id: "$id",
-            name: "$properties.name",
-            score: { $meta: "textScore" },
+        {
+          $replaceRoot: {
+            newRoot: {
+              id: "$id",
+              name: "$properties.name",
+              score: { $meta: "textScore" },
+            },
           },
         },
-      },
-      {
-        $sort: {
-          score: -1,
+        {
+          $sort: {
+            score: -1,
+          },
         },
-      },
-      {
-        $limit: limit,
-      },
-    ]);
+        {
+          $limit: limit,
+        },
+      ]);
     return await result.toArray();
   }
 );
 
 export const getGeometry = cache(
   async (id: string): Promise<Feature | null> => {
-    return (await getCollection<Feature>(databaseName, collectionName))
+    return client
+      .db(databaseName)
+      .collection<Feature>(collectionName)
       .findOne(
         {
           _id: new ObjectId(id),
@@ -119,7 +123,8 @@ export const getGeometry = cache(
 );
 
 export const getTotal = cache(async (query = {}): Promise<number> => {
-  return (await getCollection(databaseName, collectionName)).countDocuments(
-    query
-  );
+  return client
+    .db(databaseName)
+    .collection(collectionName)
+    .countDocuments(query);
 });
