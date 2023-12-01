@@ -1,6 +1,6 @@
-import { fetchFrom } from "@/lib/fetch";
-import { Feature, SearchResultItem } from "@/lib/osm";
+import { Feature } from "@/lib/osm";
 import classNames from "classnames";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   FormEventHandler,
   KeyboardEventHandler,
@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useDebounce } from "usehooks-ts";
+import { searchResultAtom, searchTermAtom } from "./atoms";
 
 type Suggestion = {
   id: Feature["id"];
@@ -23,21 +24,17 @@ export const Search = ({
 }) => {
   const [text, setText] = useState("");
   const debouncedText = useDebounce(text);
-
+  const setSearchTerm = useSetAtom(searchTermAtom);
+  const suggestions = useAtomValue(searchResultAtom);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [suggestions, setSuggestions] = useState<Array<SearchResultItem>>([]);
 
   useEffect(() => {
     if (debouncedText.trim().length < 3) {
       return;
     }
-
     setActiveIndex(-1);
-
-    fetchFrom<Array<SearchResultItem>>(
-      `/location/search?q=${debouncedText}`
-    ).then(setSuggestions);
-  }, [debouncedText, setSuggestions]);
+    setSearchTerm(debouncedText);
+  }, [debouncedText, setSearchTerm]);
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
@@ -58,7 +55,8 @@ export const Search = ({
       setActiveIndex(activeIndex - 1);
     }
     if (event.key == "Escape") {
-      setSuggestions([]);
+      setActiveIndex(-1);
+      setSearchTerm("");
     }
   };
 
@@ -82,17 +80,18 @@ export const Search = ({
         {suggestions.length > 0 && (
           <ul id="search-menu" role="listbox">
             {suggestions.map((item, index) => (
-              <li
-                key={item.id}
-                id={`suggestion-${index}`}
-                role="option"
-                aria-selected={index === activeIndex}
-                onClick={() => onSubmit(item)}
-                className={classNames({
-                  "bg-emerald-200": index === activeIndex,
-                })}
-              >
-                {item.name}
+              <li key={item.id}>
+                <button
+                  id={`suggestion-${index}`}
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  onClick={() => setActiveIndex(index)}
+                  className={classNames({
+                    "bg-emerald-200": index === activeIndex,
+                  })}
+                >
+                  {item.name}
+                </button>
               </li>
             ))}
           </ul>
