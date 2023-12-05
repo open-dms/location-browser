@@ -76,17 +76,23 @@ export const Search = ({
           aria-haspopup="listbox"
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
+          className="w-full"
         />
         {suggestions.length > 0 && (
-          <ul id="search-menu" role="listbox">
+          <ul
+            id="search-menu"
+            role="listbox"
+            className="shadow-sm rounded-sm bg-slate-50 m-1"
+          >
             {suggestions.map((item, index) => (
               <li key={item.id}>
                 <button
+                  tabIndex={-1}
                   id={`suggestion-${index}`}
                   role="option"
                   aria-selected={index === activeIndex}
                   onClick={() => setActiveIndex(index)}
-                  className={classNames({
+                  className={classNames("w-full text-start p-2", {
                     "bg-emerald-200": index === activeIndex,
                   })}
                 >
