@@ -1,3 +1,3 @@
-# Demo app vsualizing OSM adminstrative boundaries
+# Demo app visualizing OSM adminstrative boundaries
 
 Visit deployment here: https://odms-location-demo.vercel.app/
