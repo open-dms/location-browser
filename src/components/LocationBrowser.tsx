@@ -5,7 +5,7 @@ import { Feature } from "@/lib/osm";
 import { Provider, createStore } from "jotai";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
-import { LocationList } from "./LocationList";
+import { Sidebar } from "./Sidebar";
 import { LocationMap } from "./LocationMap";
 
 export const LocationBrowser = ({
@@ -28,7 +28,7 @@ export const LocationBrowser = ({
   return (
     <div className="h-full grid grid-cols-[350px_1fr] grid-rows-[1fr_auto]">
       <Provider store={store}>
-        <LocationList className="row-span-2" />
+        <Sidebar className="row-span-2" />
         <LocationMap />
         <InfoPanel />
       </Provider>

@@ -4,29 +4,13 @@ import {
   locationFeaturesAtom,
   locationSelectedAtom,
 } from "@/lib/location/atoms";
-import { Feature } from "@/lib/osm";
 import classNames from "classnames";
 import { useAtomValue } from "jotai";
 import { Search } from "./Search";
 
-export const LocationList = ({ className }: { className: string }) => {
-  // const {
-  //   state: { locations, total, selected, info, loadingState },
-  //   dispatch,
-  // } = useContext(LocationContext);
+export const Sidebar = ({ className }: { className: string }) => {
   const locations = useAtomValue(locationFeaturesAtom);
   const selected = useAtomValue(locationSelectedAtom);
-
-  const showMap = (item: Feature) => {
-    // dispatchFetchGeometry(dispatch, item.id);
-  };
-
-  // useEffect(() => {
-  //   if (!info) {
-  //     return;
-  //   }
-  //   dispatchFetchListQuery(dispatch, info);
-  // }, [dispatch, info]);
 
   return (
     <div
@@ -40,7 +24,6 @@ export const LocationList = ({ className }: { className: string }) => {
         {Array.from(locations.values()).map((item) => (
           <li key={item.id}>
             <button
-              onClick={() => showMap(item)}
               className={classNames(
                 "hover:bg-white dark:hover:bg-emerald-500 px-4 py-2 w-full text-left",
                 "select-none",
