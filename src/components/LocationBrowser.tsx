@@ -8,11 +8,7 @@ import { InfoPanel } from "./InfoPanel";
 import { Sidebar } from "./Sidebar";
 import { LocationMap } from "./LocationMap";
 
-export const LocationBrowser = ({
-  initialState,
-}: {
-  initialState: { total: number; locations: Array<Feature> };
-}) => {
+export const LocationBrowser = () => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -22,8 +18,8 @@ export const LocationBrowser = ({
   }, []);
 
   const store = createStore();
-  store.set(locationTotalAtom, initialState.total);
-  store.set(locationFeaturesAtom, initialState.locations);
+  // store.set(locationTotalAtom, initialState.total);
+  // store.set(locationFeaturesAtom, initialState.locations);
 
   return (
     <div className="h-full grid grid-cols-[350px_1fr] grid-rows-[1fr_auto]">

@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  locationFeaturesAtom,
-  locationSelectedAtom,
-} from "@/lib/location/atoms";
 import classNames from "classnames";
-import { useAtomValue } from "jotai";
 import { Search } from "./Search";
 
 export const Sidebar = ({ className }: { className: string }) => {
-  const locations = useAtomValue(locationFeaturesAtom);
-  const selected = useAtomValue(locationSelectedAtom);
-
   return (
     <div
       className={classNames(
@@ -20,21 +12,6 @@ export const Sidebar = ({ className }: { className: string }) => {
       )}
     >
       <Search onSubmit={(item) => alert(JSON.stringify(item))} />
-      <ul className="flex-1 basis-0 overflow-y-auto">
-        {Array.from(locations.values()).map((item) => (
-          <li key={item.id}>
-            <button
-              className={classNames(
-                "hover:bg-white dark:hover:bg-emerald-500 px-4 py-2 w-full text-left",
-                "select-none",
-                { "bg-white dark:bg-emerald-500": selected?.id === item.id }
-              )}
-            >
-              {item.properties.name}
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
