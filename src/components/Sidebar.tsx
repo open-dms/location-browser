@@ -2,6 +2,7 @@
 
 import classNames from "classnames";
 import { Search } from "./Search";
+import { SearchResult } from "./SearchResult";
 
 export const Sidebar = ({ className }: { className: string }) => {
   return (
@@ -12,6 +13,7 @@ export const Sidebar = ({ className }: { className: string }) => {
       )}
     >
       <Search />
+      <SearchResult />
     </div>
   );
 };
