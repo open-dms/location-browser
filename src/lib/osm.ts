@@ -16,7 +16,7 @@ export interface Feature {
 }
 
 export interface SearchResultItem {
-  id: Feature["id"];
+  id?: Feature["id"];
   name: Feature["properties"]["name"];
 }
 
@@ -78,8 +78,8 @@ export const search = cache(
       .aggregate<SearchResultItem>([
         {
           $match: {
-            $text: {
-              $search: query,
+            "properties.name": {
+              $regex: new RegExp(query, "i"),
             },
           },
         },
@@ -88,13 +88,7 @@ export const search = cache(
             newRoot: {
               id: "$id",
               name: "$properties.name",
-              score: { $meta: "textScore" },
             },
-          },
-        },
-        {
-          $sort: {
-            score: -1,
           },
         },
         {
