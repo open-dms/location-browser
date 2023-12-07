@@ -1,70 +1,102 @@
-import { Feature } from "@/lib/osm";
+"use client";
+
 import classNames from "classnames";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
+  ChangeEventHandler,
   FormEventHandler,
   KeyboardEventHandler,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import { useDebounce } from "usehooks-ts";
-import { searchResultAtom, searchTermAtom } from "./atoms";
+import { currentSearchResultAtom, searchResultAtom } from "./atoms";
+import { useDebouncedSearchText } from "./hooks";
 
-type Suggestion = {
-  id: Feature["id"];
-  name: string;
-};
+export const Search = () => {
+  const [value, setValue] = useAtom(currentSearchResultAtom);
+  const [inputValue, setInputValue] = useState("");
 
-type SubmitItem = Suggestion | Pick<Suggestion, "name">;
-
-export const Search = ({
-  onSubmit,
-}: {
-  onSubmit: (item: SubmitItem) => void;
-}) => {
-  const [text, setText] = useState("");
-  const debouncedText = useDebounce(text);
-  const setSearchTerm = useSetAtom(searchTermAtom);
+  const [search, setSearch, resetSearch] = useDebouncedSearchText("");
   const suggestions = useAtomValue(searchResultAtom);
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  useEffect(() => {
-    if (debouncedText.trim().length < 3) {
-      return;
+  const dirty = useMemo(() => {
+    if (!value) {
+      return inputValue !== "";
+    } else {
+      return inputValue !== value.query;
+    }
+  }, [inputValue, value]);
+
+  const reset = () => {
+    if (value && value.query) {
+      setInputValue(value.query);
+    } else {
+      setInputValue(search);
     }
     setActiveIndex(-1);
-    setSearchTerm(debouncedText);
-  }, [debouncedText, setSearchTerm]);
+    resetSearch();
+  };
+
+  useEffect(() => {
+    if (!dirty) {
+      setActiveIndex(-1);
+    }
+  }, [dirty]);
+
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [suggestions]);
+
+  useEffect(() => {
+    if (activeIndex > -1) {
+      setInputValue(suggestions[activeIndex].name);
+    } else if (dirty) {
+      setInputValue(search);
+    }
+  }, [activeIndex, suggestions, search, dirty]);
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    if (activeIndex > -1) {
-      onSubmit(suggestions[activeIndex]);
-      return;
+    if (dirty) {
+      if (activeIndex > -1) {
+        const result = suggestions[activeIndex];
+        setValue({ query: result.name, results: [result] });
+        setInputValue(result.name);
+
+        console.log("setInputValue", result.name);
+      } else if (inputValue.trim().length >= 3) {
+        setValue({ query: inputValue, results: suggestions });
+      }
     }
-    if (text.trim().length < 3) {
-      return;
-    }
-    onSubmit({ name: text });
+    setActiveIndex(-1);
+    resetSearch();
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "ArrowDown" && activeIndex < suggestions.length - 1) {
-      setActiveIndex(activeIndex + 1);
+      event.preventDefault();
+      setActiveIndex((activeIndex) => activeIndex + 1);
     } else if (event.key === "ArrowUp" && activeIndex > -1) {
-      setActiveIndex(activeIndex - 1);
+      event.preventDefault();
+      setActiveIndex((activeIndex) => activeIndex - 1);
+    } else if (event.key === "Escape") {
+      reset();
     }
-    if (event.key == "Escape") {
-      setActiveIndex(-1);
-      setSearchTerm("");
-    }
+  };
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setActiveIndex(-1);
+    setInputValue(e.target.value);
+    setSearch(e.target.value);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <input
-          value={text}
+          value={inputValue}
           placeholder="Suche nach Ortsname"
           role="combobox"
           aria-activedescendant={
@@ -74,15 +106,16 @@ export const Search = ({
           aria-controls="search-menu"
           aria-expanded={suggestions.length > 0}
           aria-haspopup="listbox"
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
-          className="w-full"
+          onBlur={() => reset()}
+          className="w-full dark:bg-slate-700"
         />
         {suggestions.length > 0 && (
           <ul
             id="search-menu"
             role="listbox"
-            className="shadow-sm rounded-sm bg-slate-50 m-1"
+            className="shadow-sm rounded-sm bg-slate-50 dark:bg-slate-700 m-1"
           >
             {suggestions.map((item, index) => (
               <li key={item.id}>
@@ -91,10 +124,14 @@ export const Search = ({
                   id={`suggestion-${index}`}
                   role="option"
                   aria-selected={index === activeIndex}
-                  onClick={() => setActiveIndex(index)}
-                  className={classNames("w-full text-start p-2", {
-                    "bg-emerald-200": index === activeIndex,
-                  })}
+                  onClick={handleSubmit}
+                  className={classNames(
+                    "w-full text-start p-2",
+                    "hover:bg-whit dark:hover:bg-slate-600",
+                    {
+                      "bg-emerald-200 dark:bg-slate-600": index === activeIndex,
+                    }
+                  )}
                 >
                   {item.name}
                 </button>

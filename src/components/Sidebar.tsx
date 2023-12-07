@@ -11,7 +11,7 @@ export const Sidebar = ({ className }: { className: string }) => {
         className
       )}
     >
-      <Search onSubmit={(item) => alert(JSON.stringify(item))} />
+      <Search />
     </div>
   );
 };
