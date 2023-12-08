@@ -1,7 +1,4 @@
-"use client";
-
 import classNames from "classnames";
-import { useAtom, useAtomValue } from "jotai";
 import {
   ChangeEventHandler,
   FormEventHandler,
@@ -10,68 +7,65 @@ import {
   useMemo,
   useState,
 } from "react";
-import { currentSearchResultAtom, searchResultAtom } from "./atoms";
-import { useDebouncedSearchText } from "./hooks";
+import { useSearch } from "./hooks";
+import { SearchResult, hasQuery } from "./types";
 
-export const Search = () => {
-  const [value, setValue] = useAtom(currentSearchResultAtom);
+export const Search = ({
+  value,
+  onChange,
+}: {
+  value?: SearchResult;
+  onChange: (result: SearchResult) => void;
+}) => {
   const [inputValue, setInputValue] = useState("");
-
-  const [search, setSearch, resetSearch] = useDebouncedSearchText("");
-  const suggestions = useAtomValue(searchResultAtom);
+  const [searchValue, setSearchValue] = useState("");
+  const [suggestions, resetSuggestions] = useSearch(searchValue);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const dirty = useMemo(() => {
     if (!value) {
       return inputValue !== "";
-    } else {
+    } else if (hasQuery(value)) {
       return inputValue !== value.query;
+    } else {
+      return inputValue !== value.name;
     }
   }, [inputValue, value]);
 
   const reset = () => {
-    if (value && value.query) {
-      setInputValue(value.query);
-    } else {
-      setInputValue(search);
+    if (suggestions.length) {
+      resetSuggestions();
+      return;
     }
-    setActiveIndex(-1);
-    resetSearch();
+    if (dirty && value) {
+      if (hasQuery(value)) {
+        setInputValue(value.query);
+      } else {
+        setInputValue(value.name);
+      }
+    }
   };
-
-  useEffect(() => {
-    if (!dirty) {
-      setActiveIndex(-1);
-    }
-  }, [dirty]);
 
   useEffect(() => {
     setActiveIndex(-1);
   }, [suggestions]);
 
   useEffect(() => {
-    if (activeIndex > -1) {
+    if (suggestions.length && activeIndex > -1) {
       setInputValue(suggestions[activeIndex].name);
     } else if (dirty) {
-      setInputValue(search);
+      setInputValue(searchValue);
     }
-  }, [activeIndex, suggestions, search, dirty]);
+  }, [activeIndex, dirty, searchValue, suggestions]);
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    if (dirty) {
-      if (activeIndex > -1) {
-        const result = suggestions[activeIndex];
-        setValue({ query: result.name, results: [result] });
-        setInputValue(result.name);
-
-        console.log("setInputValue", result.name);
-      } else if (inputValue.trim().length >= 3) {
-        setValue({ query: inputValue, results: suggestions });
-      }
+    if (activeIndex > -1) {
+      onChange(suggestions[activeIndex]);
+    } else if (inputValue.trim().length >= 3) {
+      onChange({ query: inputValue, results: suggestions });
     }
-    setActiveIndex(-1);
-    resetSearch();
+    resetSuggestions();
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -89,7 +83,7 @@ export const Search = () => {
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setActiveIndex(-1);
     setInputValue(e.target.value);
-    setSearch(e.target.value);
+    setSearchValue(e.target.value);
   };
 
   return (
@@ -108,7 +102,6 @@ export const Search = () => {
           aria-haspopup="listbox"
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          onBlur={() => reset()}
           className="w-full dark:bg-slate-700"
         />
         {suggestions.length > 0 && (

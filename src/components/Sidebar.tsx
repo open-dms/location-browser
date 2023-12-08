@@ -1,10 +1,14 @@
-"use client";
-
 import classNames from "classnames";
+import { useState } from "react";
 import { Search } from "./Search";
-import { SearchResult } from "./SearchResult";
+import { SearchResult, hasQuery } from "./Search/types";
+import { SearchResultList } from "./SearchResultList";
+import { useSearch } from "./Search/hooks";
 
 export const Sidebar = ({ className }: { className: string }) => {
+  const [search, setSearch] = useState<SearchResult | undefined>(undefined);
+  const query = search ? (hasQuery(search) ? search.query : search?.name) : "";
+  const [results] = useSearch(query);
   return (
     <div
       className={classNames(
@@ -12,8 +16,8 @@ export const Sidebar = ({ className }: { className: string }) => {
         className
       )}
     >
-      <Search />
-      <SearchResult />
+      <Search value={search} onChange={setSearch} />
+      <SearchResultList value={results} />
     </div>
   );
 };

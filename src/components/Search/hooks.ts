@@ -1,26 +1,50 @@
-import { useSetAtom } from "jotai";
+import { fetchFrom } from "@/lib/fetch";
+import { SearchResultItem } from "@/lib/osm";
+import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
-import { useDebounce } from "usehooks-ts";
-import { searchTermAtom } from "./atoms";
+import { searchResultMapAtom } from "./atoms";
 
-export function useDebouncedSearchText(
-  initialState: string
-): [string, typeof setText, typeof resetText] {
-  const [text, setText] = useState(initialState);
-  const debouncedText = useDebounce(text);
-  const setSearchTerm = useSetAtom(searchTermAtom);
-
-  const resetText = () => {
-    setSearchTerm("");
-  };
+export function useSearch(
+  query: string,
+  threshold = 3,
+  delay = 500
+): [typeof result, typeof reset] {
+  const searches = useAtomValue(searchResultMapAtom);
+  const [debouncedValue, setDebouncedValue] = useState("");
+  const [result, setResult] = useState<Array<SearchResultItem>>([]);
 
   useEffect(() => {
-    if (debouncedText.trim().length < 3) {
-      setSearchTerm("");
+    if (query.trim().length < threshold) {
       return;
     }
-    setSearchTerm(debouncedText.trim());
-  }, [debouncedText, setSearchTerm]);
+    const timer = setTimeout(() => setDebouncedValue(query.trim()), delay);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [delay, query, threshold]);
 
-  return [text, setText, resetText];
+  useEffect(() => {
+    if (!debouncedValue) {
+      setResult([]);
+      return;
+    }
+
+    if (searches.has(debouncedValue)) {
+      setResult(searches.get(debouncedValue) || []);
+      return;
+    }
+
+    fetchFrom<Array<SearchResultItem>>(
+      `/location/search?q=${debouncedValue}`
+    ).then((_result) => {
+      searches.set(debouncedValue, _result);
+      setResult(_result);
+    });
+  }, [debouncedValue, searches]);
+
+  const reset = () => {
+    setDebouncedValue("");
+  };
+
+  return [result, reset];
 }
