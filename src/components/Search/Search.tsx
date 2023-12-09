@@ -4,7 +4,6 @@ import {
   FormEventHandler,
   KeyboardEventHandler,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { useSearch } from "./hooks";
@@ -17,20 +16,11 @@ export const Search = ({
   value?: SearchResult;
   onChange: (result: SearchResult) => void;
 }) => {
+  const [dirty, setDirty] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [suggestions, resetSuggestions] = useSearch(searchValue);
   const [activeIndex, setActiveIndex] = useState(-1);
-
-  const dirty = useMemo(() => {
-    if (!value) {
-      return inputValue !== "";
-    } else if (hasQuery(value)) {
-      return inputValue !== value.query;
-    } else {
-      return inputValue !== value.name;
-    }
-  }, [inputValue, value]);
 
   const reset = () => {
     if (suggestions.length) {
@@ -66,6 +56,7 @@ export const Search = ({
       onChange({ query: inputValue, results: suggestions });
     }
     resetSuggestions();
+    setDirty(false);
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
@@ -84,6 +75,7 @@ export const Search = ({
     setActiveIndex(-1);
     setInputValue(e.target.value);
     setSearchValue(e.target.value);
+    setDirty(true);
   };
 
   return (
