@@ -6,44 +6,46 @@ import { searchResultMapAtom } from "./atoms";
 
 export function useSearch(
   query: string,
-  threshold = 3,
-  delay = 500
+  delay = 500,
+  threshold = 3
 ): [typeof result, typeof reset] {
   const searches = useAtomValue(searchResultMapAtom);
-  const [debouncedValue, setDebouncedValue] = useState("");
   const [result, setResult] = useState<Array<SearchResultItem>>([]);
 
   useEffect(() => {
-    if (query.trim().length < threshold) {
-      return;
-    }
-    const timer = setTimeout(() => setDebouncedValue(query.trim()), delay);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [delay, query, threshold]);
+    const search = query.trim();
 
-  useEffect(() => {
-    if (!debouncedValue) {
+    if (search.length < threshold) {
       setResult([]);
       return;
     }
 
-    if (searches.has(debouncedValue)) {
-      setResult(searches.get(debouncedValue) || []);
+    if (searches.has(search)) {
+      setResult(searches.get(search) || []);
       return;
     }
 
-    fetchFrom<Array<SearchResultItem>>(
-      `/location/search?q=${debouncedValue}`
-    ).then((_result) => {
-      searches.set(debouncedValue, _result);
-      setResult(_result);
-    });
-  }, [debouncedValue, searches]);
+    const timer = setTimeout(() => {
+      if (searches.has(search)) {
+        setResult(searches.get(search) || []);
+        return;
+      }
+
+      fetchFrom<Array<SearchResultItem>>(`/location/search?q=${search}`).then(
+        (_result) => {
+          searches.set(search, _result);
+          setResult(_result);
+        }
+      );
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [delay, query, searches, threshold]);
 
   const reset = () => {
-    setDebouncedValue("");
+    setResult([]);
   };
 
   return [result, reset];
