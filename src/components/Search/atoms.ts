@@ -1,13 +1,20 @@
 import { fetchFrom } from "@/lib/fetch";
 import { SearchResultItem } from "@/lib/osm";
 import { atom } from "jotai";
-import { atomWithCache } from "jotai-cache";
 
-export const searchTermAtom = atom("");
-export const searchResultAtom = atomWithCache(async (get) => {
-  const query = get(searchTermAtom);
-  if (!query || query.trim().length < 3) {
-    return [];
-  }
-  return fetchFrom<Array<SearchResultItem>>(`/location/search?q=${query}`);
-});
+interface SearchResultValue {
+  query: string;
+  results: Array<SearchResultItem>;
+}
+
+export const searchResultMapAtom = atom<Map<string, Array<SearchResultItem>>>(
+  new Map()
+);
+
+export const searchQueryAtom = atom("");
+
+export const currentSearchResultAtom = atom<SearchResultValue | undefined>(
+  undefined
+);
+
+export const selectedLocationAtom = atom<SearchResultItem | null>(null);

@@ -1,70 +1,88 @@
-import { Feature } from "@/lib/osm";
 import classNames from "classnames";
-import { useAtomValue, useSetAtom } from "jotai";
 import {
+  ChangeEventHandler,
   FormEventHandler,
   KeyboardEventHandler,
   useEffect,
   useState,
 } from "react";
-import { useDebounce } from "usehooks-ts";
-import { searchResultAtom, searchTermAtom } from "./atoms";
-
-type Suggestion = {
-  id: Feature["id"];
-  name: string;
-};
-
-type SubmitItem = Suggestion | Pick<Suggestion, "name">;
+import { useSearch } from "./hooks";
+import { SearchResult, hasQuery } from "./types";
 
 export const Search = ({
-  onSubmit,
+  value,
+  onChange,
 }: {
-  onSubmit: (item: SubmitItem) => void;
+  value?: SearchResult;
+  onChange: (result: SearchResult) => void;
 }) => {
-  const [text, setText] = useState("");
-  const debouncedText = useDebounce(text);
-  const setSearchTerm = useSetAtom(searchTermAtom);
-  const suggestions = useAtomValue(searchResultAtom);
+  const [dirty, setDirty] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [suggestions, resetSuggestions] = useSearch(searchValue);
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  useEffect(() => {
-    if (debouncedText.trim().length < 3) {
+  const reset = () => {
+    if (suggestions.length) {
+      resetSuggestions();
       return;
     }
+    if (dirty && value) {
+      if (hasQuery(value)) {
+        setInputValue(value.query);
+      } else {
+        setInputValue(value.name);
+      }
+    }
+  };
+
+  useEffect(() => {
     setActiveIndex(-1);
-    setSearchTerm(debouncedText);
-  }, [debouncedText, setSearchTerm]);
+  }, [suggestions]);
+
+  useEffect(() => {
+    if (suggestions.length && activeIndex > -1) {
+      setInputValue(suggestions[activeIndex].name);
+    } else if (dirty) {
+      setInputValue(searchValue);
+    }
+  }, [activeIndex, dirty, searchValue, suggestions]);
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     if (activeIndex > -1) {
-      onSubmit(suggestions[activeIndex]);
-      return;
+      onChange(suggestions[activeIndex]);
+    } else if (inputValue.trim().length >= 3) {
+      onChange({ query: inputValue, results: suggestions });
     }
-    if (text.trim().length < 3) {
-      return;
-    }
-    onSubmit({ name: text });
+    resetSuggestions();
+    setDirty(false);
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "ArrowDown" && activeIndex < suggestions.length - 1) {
-      setActiveIndex(activeIndex + 1);
+      event.preventDefault();
+      setActiveIndex((activeIndex) => activeIndex + 1);
     } else if (event.key === "ArrowUp" && activeIndex > -1) {
-      setActiveIndex(activeIndex - 1);
+      event.preventDefault();
+      setActiveIndex((activeIndex) => activeIndex - 1);
+    } else if (event.key === "Escape") {
+      reset();
     }
-    if (event.key == "Escape") {
-      setActiveIndex(-1);
-      setSearchTerm("");
-    }
+  };
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setActiveIndex(-1);
+    setInputValue(e.target.value);
+    setSearchValue(e.target.value);
+    setDirty(true);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <input
-          value={text}
+          value={inputValue}
           placeholder="Suche nach Ortsname"
           role="combobox"
           aria-activedescendant={
@@ -74,21 +92,31 @@ export const Search = ({
           aria-controls="search-menu"
           aria-expanded={suggestions.length > 0}
           aria-haspopup="listbox"
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
+          className="w-full dark:bg-slate-700"
         />
         {suggestions.length > 0 && (
-          <ul id="search-menu" role="listbox">
+          <ul
+            id="search-menu"
+            role="listbox"
+            className="shadow-sm rounded-sm bg-slate-50 dark:bg-slate-700 m-1"
+          >
             {suggestions.map((item, index) => (
               <li key={item.id}>
                 <button
+                  tabIndex={-1}
                   id={`suggestion-${index}`}
                   role="option"
                   aria-selected={index === activeIndex}
-                  onClick={() => setActiveIndex(index)}
-                  className={classNames({
-                    "bg-emerald-200": index === activeIndex,
-                  })}
+                  onClick={handleSubmit}
+                  className={classNames(
+                    "w-full text-start p-2",
+                    "hover:bg-whit dark:hover:bg-slate-600",
+                    {
+                      "bg-emerald-200 dark:bg-slate-600": index === activeIndex,
+                    }
+                  )}
                 >
                   {item.name}
                 </button>
