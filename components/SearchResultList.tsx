@@ -6,7 +6,7 @@ import { selectedLocationAtom } from "./Search/atoms";
 export const SearchResultList = ({
   value,
 }: {
-  value?: Array<SearchResultItem>;
+  value?: SearchResultItem | Array<SearchResultItem>;
 }) => {
   const [selected, setSelected] = useAtom(selectedLocationAtom);
 
@@ -16,7 +16,7 @@ export const SearchResultList = ({
 
   return (
     <ul className="flex flex-col gap-2 p-2" role="listbox">
-      {value.map((item) => (
+      {(Array.isArray(value) ? value : [value]).map((item) => (
         <li
           key={item.id}
           tabIndex={0}
