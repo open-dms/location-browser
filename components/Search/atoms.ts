@@ -1,4 +1,3 @@
-import { fetchFrom } from "@/lib/fetch";
 import { SearchResultItem } from "@/lib/osm";
 import { atom } from "jotai";
 

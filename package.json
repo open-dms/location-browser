@@ -1,7 +1,7 @@
 {
   "name": "location-demo",
   "description": "A demo for location geojson features",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -10,15 +10,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
+    "clsx": "^2.0.0",
+    "cmdk": "^0.2.0",
     "jotai": "^2.6.0",
     "jotai-cache": "^0.3.0",
+    "lucide-react": "^0.294.0",
     "maplibre-gl": "^3.6.0",
     "mongodb": "^6.2.0",
     "next": "14.0.2",
     "react": "^18",
     "react-dom": "^18",
     "react-map-gl": "^7.1.6",
+    "tailwind-merge": "^2.1.0",
+    "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^2.9.1",
     "vercel": "^32.5.3"
   },
