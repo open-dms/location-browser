@@ -36,7 +36,7 @@ export const LocationMap = () => {
   }, [mapRef, bounds]);
 
   return (
-    <div className="relative">
+    <div className="w-full h-full">
       <Map
         ref={mapRef}
         reuseMaps

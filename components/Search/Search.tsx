@@ -62,7 +62,11 @@ export const Search = ({
   };
 
   return (
-    <Command shouldFilter={false} className="h-fit" onKeyDown={handleKeyDown}>
+    <Command
+      shouldFilter={false}
+      className="h-fit shadow-md"
+      onKeyDown={handleKeyDown}
+    >
       <CommandInput
         onValueChange={handleInput}
         value={inputValue}
