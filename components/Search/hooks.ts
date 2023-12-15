@@ -46,8 +46,6 @@ export function useSearch(
 
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       fetchFrom<Array<SearchResultItem>>(`/location/search?q=${search}`).then(
         (_result) => {
           searches.set(search, _result);
