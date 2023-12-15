@@ -7,9 +7,9 @@ import {
   CommandLoading,
 } from "@/components/ui/command";
 import { SearchResultItem } from "@/lib/osm";
+import { Loader2 } from "lucide-react";
 import { KeyboardEventHandler, useState } from "react";
 import { useSearch } from "./hooks";
-import { Loader2 } from "lucide-react";
 
 export const Search = ({
   value,
@@ -49,7 +49,9 @@ export const Search = ({
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      console.log("handleSubmit");
+      onChange(inputValue);
+      resetSuggestions();
+      setDirty(false);
     } else if (e.key === "Escape") {
       reset();
     }

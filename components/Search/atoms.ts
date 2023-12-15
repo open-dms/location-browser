@@ -6,9 +6,9 @@ interface SearchResultValue {
   results: Array<SearchResultItem>;
 }
 
-export const searchResultMapAtom = atom<Map<string, Array<SearchResultItem>>>(
-  new Map()
-);
+export const searchResultMapAtom = atom<
+  Map<string, Array<SearchResultItem> | Promise<Array<SearchResultItem>>>
+>(new Map());
 
 export const searchQueryAtom = atom("");
 
