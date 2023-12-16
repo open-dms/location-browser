@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { Loader } from "../Loader";
 import { locationDetailsAtom, selectedLocationAtom } from "./atoms";
 
-export const SearchResultList = ({
+export const SearchResult = ({
   value,
   loading = false,
 }: {
