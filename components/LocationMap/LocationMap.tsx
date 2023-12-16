@@ -1,8 +1,9 @@
+import { Feature } from "@/lib/osm";
 import { useAtomValue } from "jotai";
 import { LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Image from "next/image";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
 import {
   locationDetailsAtom,
@@ -12,9 +13,12 @@ import { useMapInfoListener } from "./hooks";
 import { layerStyle } from "./layerStyles";
 
 export const LocationMap = () => {
+  const mapRef = useRef<MapRef>(null);
   const details = useAtomValue(locationDetailsAtom);
   const current = useAtomValue(selectedLocationAtom);
-  const selected = (() => {
+  const [focused, setFocused] = useState<Feature>();
+
+  useEffect(() => {
     if (!current || !details || !details.has(current.id)) {
       return;
     }
@@ -22,29 +26,27 @@ export const LocationMap = () => {
     if (item instanceof Promise) {
       return;
     }
-    return item;
-  })();
+    setFocused(item);
+  }, [current, details]);
 
   const bounds = useMemo(
     () =>
-      selected?.bounds
-        ? new LngLatBounds(...selected.bounds)
+      focused?.bounds
+        ? new LngLatBounds(...focused.bounds)
         : new LngLatBounds([
             5.98865807458, 47.3024876979, 15.0169958839, 54.983104153,
           ]),
-    [selected]
+    [focused]
   );
-
-  const mapRef = useRef<MapRef>(null);
-
-  const geojson = selected && {
-    type: "FeatureCollection",
-    features: [selected],
-  };
 
   useEffect(() => {
     mapRef.current?.fitBounds(bounds, { padding: 100, speed: 3 });
   }, [mapRef, bounds]);
+
+  const geojson = focused && {
+    type: "FeatureCollection",
+    features: [focused],
+  };
 
   return (
     <div className="w-full h-full">
