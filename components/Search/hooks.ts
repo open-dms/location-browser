@@ -1,7 +1,7 @@
 import { fetchFrom } from "@/lib/fetch";
 import { SearchResultItem } from "@/lib/osm";
 import { useAtomValue } from "jotai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { searchResultMapAtom } from "./atoms";
 
 export function useSearch(
@@ -20,6 +20,7 @@ export function useSearch(
   const [debouncing, setDebouncing] = useState(false);
 
   const timer = useRef<ReturnType<typeof setTimeout>>();
+  const controller = useRef<AbortController>();
 
   useEffect(() => {
     const search = query.trim();
@@ -30,31 +31,44 @@ export function useSearch(
     }
 
     if (searches.has(search)) {
-      setResult(searches.get(search) || []);
-      return;
+      const _result = searches.get(search) || [];
+      if (!(_result instanceof Promise)) {
+        setResult(_result);
+        return;
+      }
     }
 
     setDebouncing(true);
 
     timer.current = setTimeout(async () => {
       setDebouncing(false);
-
-      if (searches.has(search)) {
-        setResult(searches.get(search) || []);
-        return;
-      }
-
       setLoading(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      if (controller.current) {
+        controller.current.abort("query changed");
+      }
 
-      fetchFrom<Array<SearchResultItem>>(`/location/search?q=${search}`).then(
-        (_result) => {
-          searches.set(search, _result);
-          setResult(_result);
-          setLoading(false);
-        }
+      controller.current = new AbortController();
+
+      const p = fetchFrom<Array<SearchResultItem>>(
+        `/location/search?q=${search}`,
+        { signal: controller.current.signal }
       );
+
+      searches.set(search, p);
+
+      try {
+        const _result = await p;
+        searches.set(search, _result);
+        setResult(_result);
+      } catch (err) {
+        searches.delete(search);
+        if (err instanceof DOMException && err.name !== "AbortError") {
+          throw err;
+        }
+      } finally {
+        setLoading(false);
+      }
     }, delay);
 
     return () => {
@@ -63,8 +77,13 @@ export function useSearch(
   }, [delay, query, searches, threshold]);
 
   const reset = () => {
-    setResult([]);
     clearTimeout(timer.current);
+    setLoading(false);
+    setDebouncing(false);
+    setResult([]);
+    if (controller.current) {
+      controller.current.abort("reset search");
+    }
   };
 
   return { result, reset, loading, debouncing };

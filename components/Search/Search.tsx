@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/command";
 import { SearchResultItem } from "@/lib/osm";
 import { KeyboardEventHandler, useState } from "react";
+import { Loader } from "../Loader";
 import { useSearch } from "./hooks";
-import { Loader2 } from "lucide-react";
 
 export const Search = ({
   value,
@@ -49,7 +49,9 @@ export const Search = ({
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
-      console.log("handleSubmit");
+      onChange(inputValue);
+      resetSuggestions();
+      setDirty(false);
     } else if (e.key === "Escape") {
       reset();
     }
@@ -62,7 +64,11 @@ export const Search = ({
   };
 
   return (
-    <Command shouldFilter={false} className="h-fit" onKeyDown={handleKeyDown}>
+    <Command
+      shouldFilter={false}
+      className="h-fit shadow-md rounded-lg shrink-0"
+      onKeyDown={handleKeyDown}
+    >
       <CommandInput
         onValueChange={handleInput}
         value={inputValue}
@@ -71,9 +77,7 @@ export const Search = ({
       <CommandList className="max-h-[300px]">
         {loading && (
           <CommandLoading>
-            <div className="flex py-6 justify-center">
-              <Loader2 className="animate-spin opacity-50" />
-            </div>
+            <Loader className="flex py-6 justify-center" />
           </CommandLoading>
         )}
         {hasValue && dirty && !debouncing && !loading && (

@@ -1,6 +1,7 @@
 import { LngLatBounds, LngLatBoundsLike } from "maplibre-gl";
 import { ObjectId, WithId } from "mongodb";
 import { cache } from "react";
+import { toBounds } from "./geojson";
 import { client } from "./mongodb";
 
 const databaseName = "odms";
@@ -13,10 +14,11 @@ export interface Feature {
   properties: {
     name: string;
   };
+  bounds?: Array<[number, number]>;
 }
 
 export interface SearchResultItem {
-  id?: Feature["id"];
+  id: Feature["id"];
   name: Feature["properties"]["name"];
 }
 
@@ -71,7 +73,7 @@ export const getList = cache(
 );
 
 export const search = cache(
-  async (query: string, limit = 10): Promise<SearchResultItem[]> => {
+  async (query: string, limit = 100): Promise<SearchResultItem[]> => {
     const result = client
       .db(databaseName)
       .collection(collectionName)
@@ -86,7 +88,7 @@ export const search = cache(
         {
           $replaceRoot: {
             newRoot: {
-              id: "$id",
+              id: "$_id",
               name: "$properties.name",
             },
           },
@@ -101,7 +103,7 @@ export const search = cache(
 
 export const getGeometry = cache(
   async (id: string): Promise<Feature | null> => {
-    return client
+    const item = await client
       .db(databaseName)
       .collection<Feature>(collectionName)
       .findOne(
@@ -113,6 +115,11 @@ export const getGeometry = cache(
         }
       )
       .then(mapOr(fromWithId));
+    if (!item) {
+      return null;
+    }
+    item.bounds = toBounds(item);
+    return item;
   }
 );
 

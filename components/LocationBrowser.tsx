@@ -1,10 +1,10 @@
 "use client";
 
-import { Provider, createStore } from "jotai";
+import { Provider } from "jotai";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
-import { LocationMap } from "./LocationMap";
 import { Sidebar } from "./Sidebar";
+import { LocationMap } from "./LocationMap";
 
 export const LocationBrowser = () => {
   useEffect(() => {
@@ -16,11 +16,11 @@ export const LocationBrowser = () => {
   }, []);
 
   return (
-    <div className="h-full grid grid-cols-[350px_1fr] grid-rows-[1fr_auto]">
+    <div className="relative h-full">
       <Provider>
-        <Sidebar className="row-span-2" />
-        <LocationMap />
+        <Sidebar />
         <InfoPanel />
+        <LocationMap />
       </Provider>
     </div>
   );

@@ -8,8 +8,11 @@ export function isError<T>(
   return "error" in response;
 }
 
-export async function fetchFrom<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+export async function fetchFrom<T>(
+  url: string,
+  init?: RequestInit
+): Promise<T> {
+  const response = await fetch(url, init);
   const result = await response.json();
   if (isError(result)) {
     throw result.error;
