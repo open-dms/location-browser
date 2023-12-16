@@ -2,7 +2,7 @@ import { SearchResultItem } from "@/lib/osm";
 import { useState } from "react";
 import { Search } from "./Search";
 import { useSearch } from "./Search/hooks";
-import { SearchResultList } from "./SearchResultList";
+import { SearchResultList } from "./SearchResult/SearchResultList";
 
 export const Sidebar = () => {
   const [search, setSearch] = useState<SearchResultItem | string | undefined>(
@@ -10,11 +10,11 @@ export const Sidebar = () => {
   );
   const query = typeof search === "string" ? search : "";
   const results = typeof search !== "string" ? search : undefined;
-  const { result: queryResult } = useSearch(query, 0);
+  const { result: queryResult, loading } = useSearch(query, 0);
   return (
-    <div className="absolute flex flex-col gap-4 w-full sm:max-w-sm p-4 z-10">
+    <div className="absolute flex flex-col gap-4 max-h-full w-full sm:max-w-sm p-4 pb-11 z-10">
       <Search value={search} onChange={setSearch} />
-      <SearchResultList value={results ?? queryResult} />
+      <SearchResultList value={results ?? queryResult} loading={loading} />
     </div>
   );
 };

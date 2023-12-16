@@ -40,19 +40,23 @@ function isPoint(geometry: Geometry): geometry is Point {
 }
 
 // Function to calculate bounds from a flattened array of coordinates
-export function toBounds(feature: Feature) {
+export function toBounds(
+  feature: Feature
+): Array<[number, number]> | undefined {
   let coordinates: LngLatLike[] = [];
   const { geometry } = feature;
 
   if (isGeometryCollection(geometry)) {
     return;
   } else if (isPoint(geometry)) {
-    return new LngLatBounds(geometry.coordinates as LngLatLike);
+    return new LngLatBounds(geometry.coordinates as LngLatLike).toArray();
   }
 
   coordinates = flattenCoordinates(geometry.coordinates) as LngLatLike[];
 
-  return coordinates.reduce((bounds, coord) => {
-    return bounds.extend(coord);
-  }, new LngLatBounds(coordinates[0], coordinates[0]));
+  return coordinates
+    .reduce((bounds, coord) => {
+      return bounds.extend(coord);
+    }, new LngLatBounds(coordinates[0], coordinates[0]))
+    .toArray();
 }

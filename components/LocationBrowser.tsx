@@ -3,8 +3,8 @@
 import { Provider } from "jotai";
 import { useEffect } from "react";
 import { InfoPanel } from "./InfoPanel";
-import { LocationMap } from "./LocationMap";
 import { Sidebar } from "./Sidebar";
+import { LocationMap } from "./LocationMap";
 
 export const LocationBrowser = () => {
   useEffect(() => {
@@ -16,7 +16,7 @@ export const LocationBrowser = () => {
   }, []);
 
   return (
-    <div className="h-full">
+    <div className="relative h-full">
       <Provider>
         <Sidebar />
         <InfoPanel />

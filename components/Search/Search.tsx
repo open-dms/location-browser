@@ -7,8 +7,8 @@ import {
   CommandLoading,
 } from "@/components/ui/command";
 import { SearchResultItem } from "@/lib/osm";
-import { Loader2 } from "lucide-react";
 import { KeyboardEventHandler, useState } from "react";
+import { Loader } from "../Loader";
 import { useSearch } from "./hooks";
 
 export const Search = ({
@@ -66,7 +66,7 @@ export const Search = ({
   return (
     <Command
       shouldFilter={false}
-      className="h-fit shadow-md"
+      className="h-fit shadow-md rounded-lg shrink-0"
       onKeyDown={handleKeyDown}
     >
       <CommandInput
@@ -77,9 +77,7 @@ export const Search = ({
       <CommandList className="max-h-[300px]">
         {loading && (
           <CommandLoading>
-            <div className="flex py-6 justify-center">
-              <Loader2 className="animate-spin opacity-50" />
-            </div>
+            <Loader className="flex py-6 justify-center" />
           </CommandLoading>
         )}
         {hasValue && dirty && !debouncing && !loading && (

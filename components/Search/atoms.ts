@@ -15,5 +15,3 @@ export const searchQueryAtom = atom("");
 export const currentSearchResultAtom = atom<SearchResultValue | undefined>(
   undefined
 );
-
-export const selectedLocationAtom = atom<SearchResultItem | null>(null);
