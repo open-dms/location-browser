@@ -4,6 +4,7 @@ import { LngLatBounds } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LngLatLike } from "react-map-gl";
 import Map, { Layer, MapRef, Source } from "react-map-gl/maplibre";
 import {
   locationDetailsAtom,
@@ -32,9 +33,11 @@ export const LocationMap = () => {
   const bounds = useMemo(
     () =>
       focused?.bounds
-        ? new LngLatBounds(...focused.bounds)
+        ? new LngLatBounds(
+            ...focused.bounds.map<LngLatLike>(([lng, lat]) => [lng - 0.02, lat])
+          )
         : new LngLatBounds([
-            5.98865807458, 47.3024876979, 15.0169958839, 54.983104153,
+            3.4365658477748298, 44.00000000000017, 18.693075093532144, 57,
           ]),
     [focused]
   );
@@ -56,7 +59,7 @@ export const LocationMap = () => {
         initialViewState={{
           bounds,
         }}
-        maxBounds={[0, 45, 20, 58]}
+        maxBounds={[0, 44, 20, 57]}
         style={{ width: "100%", height: "100%" }}
         mapStyle={`https://api.maptiler.com/maps/openstreetmap/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`}
         {...useMapInfoListener()}
